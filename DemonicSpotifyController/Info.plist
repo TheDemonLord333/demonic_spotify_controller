@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	 Diese Datei ergänzt gezielt die Schlüssel, die Xcodes automatisch
+	 generiertes Info.plist (GENERATE_INFOPLIST_FILE = YES) nicht über
+	 INFOPLIST_KEY_*-Build-Settings abdeckt: das Redirect-URL-Scheme für
+	 den Spotify-Authorization-Callback sowie die Freigabe des
+	 "spotify"-Schemes für canOpenURL()/App Remote. Alle übrigen Info.plist-
+	 Werte (Orientierungen, Accent-Color, …) bleiben über die generierte
+	 Datei gesteuert und werden von Xcode automatisch zusammengeführt.
+	-->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>me.thedemonlord333.DemonicSpotifyController.spotify-auth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>demonicspotify</string>
+			</array>
+		</dict>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>spotify</string>
+	</array>
+</dict>
+</plist>

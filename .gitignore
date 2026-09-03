@@ -1,0 +1,28 @@
+# Xcode
+.DS_Store
+build/
+DerivedData/
+*.moved-aside
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# CocoaPods (nicht verwendet, zur Sicherheit trotzdem ausgeschlossen)
+Pods/
+
+# Echte Spotify-Zugangsdaten – NIEMALS committen.
+# Nur die *.example.json-Varianten gehören ins Repository.
+DemonicSpotifyController/Configuration/SpotifyConfig.json
+SpotifyServerConfig.json
+**/SpotifyServerConfig.json
+*.env
+.env
