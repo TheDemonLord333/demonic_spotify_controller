@@ -2,60 +2,58 @@
 //  ContentView.swift
 //  DemonicSpotifyController
 //
-//  Created by David Martens on 04.09.26.
+//  Wurzel-View: zeigt je nach Anmeldestatus entweder den Connect-Bildschirm
+//  oder die Kachelübersicht. Erstellt das LibraryViewModel einmalig mit
+//  dem SwiftData-ModelContext aus der Umgebung.
 //
 
 import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    let environment: AppEnvironment
+
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @State private var libraryViewModel: LibraryViewModel?
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+        ZStack {
+            DemonicBackground()
+
+            switch environment.authService.state {
+            case .signedIn:
+                libraryOrLoading
+            case .signedOut, .error(_):
+                ConnectSpotifyView(environment: environment)
+            case .authorizing:
+                VStack(spacing: 16) {
+                    ProgressView().tint(DemonicPalette.glowingScarlet)
+                    Text(DemonicError.appSwitchRequired.errorDescription ?? "")
+                        .font(.callout)
+                        .foregroundStyle(DemonicPalette.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
                 }
             }
-        } detail: {
-            Text("Select an item")
+        }
+        .task {
+            if libraryViewModel == nil {
+                libraryViewModel = LibraryViewModel(modelContext: modelContext, playbackCoordinator: environment.playbackCoordinator)
+            }
         }
     }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
+    @ViewBuilder
+    private var libraryOrLoading: some View {
+        if let libraryViewModel {
+            LibraryView(viewModel: libraryViewModel, environment: environment)
+        } else {
+            ProgressView().tint(DemonicPalette.glowingScarlet)
         }
     }
 }
 
 #Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+    ContentView(environment: .bootstrap())
+        .modelContainer(for: SavedSpotifyItem.self, inMemory: true)
 }
