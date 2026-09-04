@@ -61,12 +61,18 @@ struct EmberParticlesView: View {
         let scale: CGFloat
     }
 
-    private let embers: [Ember] = (0..<14).map { index in
-        Ember(
-            xFraction: CGFloat.random(in: 0...1, using: &SeededGenerator(seed: index)),
-            delay: Double.random(in: 0...4, using: &SeededGenerator(seed: index + 100)),
-            duration: Double.random(in: 6...11, using: &SeededGenerator(seed: index + 200)),
-            scale: CGFloat.random(in: 0.5...1.3, using: &SeededGenerator(seed: index + 300))
+    private let embers: [Ember] = (0..<14).map { index -> Ember in
+        // `&` benötigt eine adressierbare Variable, kein Initializer-Ergebnis –
+        // daher hier explizit benannte, veränderliche Generatoren.
+        var xGenerator = SeededGenerator(seed: index)
+        var delayGenerator = SeededGenerator(seed: index + 100)
+        var durationGenerator = SeededGenerator(seed: index + 200)
+        var scaleGenerator = SeededGenerator(seed: index + 300)
+        return Ember(
+            xFraction: CGFloat.random(in: 0...1, using: &xGenerator),
+            delay: Double.random(in: 0...4, using: &delayGenerator),
+            duration: Double.random(in: 6...11, using: &durationGenerator),
+            scale: CGFloat.random(in: 0.5...1.3, using: &scaleGenerator)
         )
     }
 

@@ -58,7 +58,7 @@ final class SpotifyConfigurationLoader: SpotifyConfigurationLoading {
     /// per Dependency Injection weitergereicht werden.
     func loadConfiguration() -> Result<SpotifyConfiguration, SpotifyConfigurationError> {
         guard let url = bundle.url(forResource: resourceName, withExtension: "json") else {
-            AppLog.config.error("SpotifyConfig.json nicht im Bundle gefunden.")
+            AppLog.debugOnly(AppLog.config, "SpotifyConfig.json nicht im Bundle gefunden.")
             return .failure(.fileNotFound)
         }
 
@@ -66,7 +66,7 @@ final class SpotifyConfigurationLoader: SpotifyConfigurationLoading {
         do {
             data = try Data(contentsOf: url)
         } catch {
-            AppLog.config.error("SpotifyConfig.json konnte nicht gelesen werden.")
+            AppLog.debugOnly(AppLog.config, "SpotifyConfig.json konnte nicht gelesen werden.")
             return .failure(.unreadable(underlying: error))
         }
 
@@ -74,7 +74,7 @@ final class SpotifyConfigurationLoader: SpotifyConfigurationLoading {
         do {
             configuration = try JSONDecoder().decode(SpotifyConfiguration.self, from: data)
         } catch {
-            AppLog.config.error("SpotifyConfig.json ist kein gültiges JSON.")
+            AppLog.debugOnly(AppLog.config, "SpotifyConfig.json ist kein gültiges JSON.")
             return .failure(.malformedJSON(underlying: error))
         }
 
@@ -94,7 +94,7 @@ final class SpotifyConfigurationLoader: SpotifyConfigurationLoading {
             return .failure(.invalidRedirectUri(trimmedRedirect))
         }
 
-        AppLog.config.info("Spotify-Konfiguration erfolgreich geladen.")
+        AppLog.debugOnly(AppLog.config, "Spotify-Konfiguration erfolgreich geladen.")
         return .success(configuration)
     }
 }
