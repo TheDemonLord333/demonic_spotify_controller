@@ -33,9 +33,22 @@
 		5DF09B20304A302A00406CAD /* DemonicSpotifyControllerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DemonicSpotifyControllerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		83B2831B6EEC0734D9BDFD6C /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5DF09B06304A302600406CAD /* DemonicSpotifyController */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		5DF09B09304A302600406CAD /* DemonicSpotifyController */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				83B2831B6EEC0734D9BDFD6C /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
 			path = DemonicSpotifyController;
 			sourceTree = "<group>";
 		};
