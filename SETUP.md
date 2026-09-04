@@ -130,28 +130,51 @@ ist, und damit App Remote sowie `authorizeAndPlayURI` funktionieren.
 ## 11. Spotify iOS SDK einbinden
 
 Das Projekt bindet das offizielle Spotify iOS SDK
-(`https://github.com/spotify/ios-sdk`) bereits als **Swift Package
-Manager**-Abhängigkeit ein (Produkt `SpotifyiOS`). Da das SDK-Repository
-keine versionierten Tags veröffentlicht, ist die Abhängigkeit auf einen
-festen Commit gepinnt (`revision = 8d3a71dc25282072f8aa8bb0611cea2324e18f28`,
-Stand des `master`-Branches). Eine Pinnung auf einen konkreten Commit statt
-auf einen Branch-Namen ist bewusst gewählt, da GitHubs Standard-Branch-
-Namensauflösung sich je nach Zeitpunkt/Cache unterschiedlich verhalten kann
-("master" vs. "main") und ein Commit-Hash immer eindeutig auflösbar ist.
+(`https://github.com/spotify/ios-sdk`) als `SpotifyiOS.xcframework` ein.
+Der gesamte App-Remote-Code ist unabhängig davon, wie das Framework
+eingebunden wird, über `#if canImport(SpotifyiOS)` abgesichert: ist das
+Framework (noch) nicht vorhanden, kompiliert das Projekt trotzdem und
+verwendet automatisch Mock-Verhalten.
 
-Zum Auflösen des Pakets:
+**Manuelle Einbindung als lokales Framework (empfohlen, kein Git/Netzwerk
+in Xcode nötig):**
 
-1. Öffne `DemonicSpotifyController.xcodeproj` in Xcode.
-2. Xcode löst die Paketabhängigkeit beim ersten Öffnen automatisch auf
-   (Internetzugriff erforderlich). Falls nicht, wähle
-   **File → Packages → Resolve Package Versions**.
-3. Prüfe unter **Target → General → Frameworks, Libraries, and Embedded
-   Content**, dass `SpotifyiOS` gelistet ist.
+Das Repository veröffentlicht keine Versions-Tags und stellt das Framework
+nur über Git bereit. Falls die Swift-Package-Manager-Auflösung in Xcode
+Probleme macht (z. B. wegen eines defekten lokalen `git`), lässt sich das
+`SpotifyiOS.xcframework` stattdessen manuell einbinden:
 
-Solange das Paket nicht aufgelöst ist (z. B. in einer Build-Umgebung
-ohne Netzwerkzugriff), kompiliert das Projekt trotzdem: Der gesamte
-App-Remote-Code ist über `#if canImport(SpotifyiOS)` abgesichert und
-verwendet in diesem Fall automatisch Mock-Verhalten.
+1. Lade das Framework herunter – entweder als ZIP direkt von Claude (siehe
+   Chat) oder manuell über GitHubs Weboberfläche: gehe zu
+   `https://github.com/spotify/ios-sdk`, klicke auf **Code → Download ZIP**
+   (das nutzt nur HTTPS über den Browser, keinen lokalen `git`-Client) und
+   entpacke die ZIP. Der Ordner `SpotifyiOS.xcframework` liegt darin im
+   Hauptverzeichnis.
+2. Öffne `DemonicSpotifyController.xcodeproj` in Xcode.
+3. Ziehe den Ordner `SpotifyiOS.xcframework` per Drag & Drop in den
+   Project Navigator, in die Gruppe `DemonicSpotifyController` (auf
+   gleicher Ebene wie `App`, `Models`, `Views`, …).
+4. Im erscheinenden Dialog: **"Copy items if needed"** aktivieren, unter
+   **"Add to targets"** nur das Target `DemonicSpotifyController`
+   ankreuzen, dann **Finish**.
+5. Öffne **Target → General → Frameworks, Libraries, and Embedded
+   Content**. `SpotifyiOS.xcframework` sollte dort erscheinen – stelle
+   den Wert in der Spalte **Embed** auf **"Embed & Sign"** (das Framework
+   ist eine dynamische Bibliothek und muss ins App-Bundle eingebettet
+   werden, sonst startet die App auf dem Gerät nicht).
+6. Baue das Projekt (⌘B).
+
+**Alternative: Swift Package Manager**
+
+Falls dein lokales `git` einwandfrei funktioniert, kannst du das SDK
+stattdessen ganz normal als Swift-Package-Abhängigkeit hinzufügen:
+**File → Add Package Dependencies…**, URL `https://github.com/spotify/ios-sdk`
+eingeben, als Dependency Rule **"Exact Commit"**
+(`8d3a71dc25282072f8aa8bb0611cea2324e18f28`, Stand des `master`-Branches
+zum Zeitpunkt der Erstellung dieses Projekts) oder **"Branch" → master**
+wählen, Produkt `SpotifyiOS` zum Target `DemonicSpotifyController`
+hinzufügen. Beide Wege (lokales Framework oder SPM) funktionieren mit
+demselben Code – verwende nicht beide gleichzeitig für dasselbe Target.
 
 ## 12./13./14./15. Auf einem echten iPhone testen
 
@@ -205,14 +228,11 @@ Spotify-Konto im Simulator starten:
   kontinuierlichen Sekundentakt – der Balken kann daher zwischen zwei
   Updates leicht hinter der tatsächlichen Wiedergabe zurückbleiben.
 - **Spotify-SDK ohne Versions-Tags**: `spotify/ios-sdk` veröffentlicht
-  aktuell keine SemVer-Tags, weshalb die Paketabhängigkeit auf einen festen
-  Commit des `master`-Branches gepinnt ist, statt auf den Branch-Namen
-  selbst. Prüfe bei Bedarf in Xcodes Paketverwaltung (Project → Package
-  Dependencies → ios-sdk → Rechtsklick → "Update to Latest Package
-  Versions" funktioniert bei einer Revision-Pinnung nicht; stattdessen die
-  Abhängigkeit entfernen und mit einem neueren Commit-Hash oder, falls
-  inzwischen verfügbar, einem echten Versions-Tag neu hinzufügen), ob
-  zwischenzeitlich ein stabiler Tag verfügbar ist.
+  aktuell keine SemVer-Tags. Das Projekt bindet das SDK deshalb standardmäßig
+  als lokales `SpotifyiOS.xcframework` ein (siehe Schritt 11) statt als
+  Swift-Package-Abhängigkeit, um von Git-/Netzwerkproblemen bei der
+  Paketauflösung unabhängig zu sein. Prüfe bei einem SDK-Update, ob
+  inzwischen ein stabiler Tag verfügbar ist.
 - **Premium-Funktionen**: Manche Wiedergabefunktionen (z. B. On-Demand-
   Wiedergabe bestimmter Inhalte) setzen laut Spotify ein Premium-Konto
   voraus. Die App zeigt in diesem Fall die Fehlermeldung "Dein
