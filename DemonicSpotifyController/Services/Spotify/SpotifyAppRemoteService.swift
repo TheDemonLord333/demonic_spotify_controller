@@ -65,10 +65,16 @@ final class SpotifyAppRemoteService: NSObject, SpotifyAppRemoteServicing {
     private var lastKnownAccessToken: String?
 
     #if canImport(SpotifyiOS)
+    // `@Observable` synthesizes init accessors for stored properties, die
+    // sich für `lazy var` nicht generieren lassen. Diese beiden Properties
+    // sind reine Implementierungsdetails (keine UI-Zustände) und werden
+    // daher bewusst von der Beobachtung ausgenommen.
+    @ObservationIgnored
     private lazy var sptConfiguration: SPTConfiguration = SPTConfiguration(
         clientID: configuration.clientId,
         redirectURL: configuration.redirectURL ?? URL(string: "https://invalid.example")!
     )
+    @ObservationIgnored
     private lazy var appRemote: SPTAppRemote = {
         let remote = SPTAppRemote(configuration: sptConfiguration, logLevel: .info)
         remote.delegate = self
