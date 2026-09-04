@@ -1,0 +1,4 @@
+{
+  "clientId": "DEINE_SPOTIFY_CLIENT_ID",
+  "redirectUri": "demonicspotify://callback"
+}
