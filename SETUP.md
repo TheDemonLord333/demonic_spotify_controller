@@ -132,8 +132,12 @@ ist, und damit App Remote sowie `authorizeAndPlayURI` funktionieren.
 Das Projekt bindet das offizielle Spotify iOS SDK
 (`https://github.com/spotify/ios-sdk`) bereits als **Swift Package
 Manager**-Abhängigkeit ein (Produkt `SpotifyiOS`). Da das SDK-Repository
-keine versionierten Tags veröffentlicht, ist die Abhängigkeit auf den
-Branch `master` gepinnt.
+keine versionierten Tags veröffentlicht, ist die Abhängigkeit auf einen
+festen Commit gepinnt (`revision = 8d3a71dc25282072f8aa8bb0611cea2324e18f28`,
+Stand des `master`-Branches). Eine Pinnung auf einen konkreten Commit statt
+auf einen Branch-Namen ist bewusst gewählt, da GitHubs Standard-Branch-
+Namensauflösung sich je nach Zeitpunkt/Cache unterschiedlich verhalten kann
+("master" vs. "main") und ein Commit-Hash immer eindeutig auflösbar ist.
 
 Zum Auflösen des Pakets:
 
@@ -201,9 +205,14 @@ Spotify-Konto im Simulator starten:
   kontinuierlichen Sekundentakt – der Balken kann daher zwischen zwei
   Updates leicht hinter der tatsächlichen Wiedergabe zurückbleiben.
 - **Spotify-SDK ohne Versions-Tags**: `spotify/ios-sdk` veröffentlicht
-  aktuell keine SemVer-Tags, weshalb die Paketabhängigkeit auf den
-  `master`-Branch gepinnt ist. Prüfe bei Bedarf in Xcodes
-  Paketverwaltung, ob zwischenzeitlich ein stabiler Tag verfügbar ist.
+  aktuell keine SemVer-Tags, weshalb die Paketabhängigkeit auf einen festen
+  Commit des `master`-Branches gepinnt ist, statt auf den Branch-Namen
+  selbst. Prüfe bei Bedarf in Xcodes Paketverwaltung (Project → Package
+  Dependencies → ios-sdk → Rechtsklick → "Update to Latest Package
+  Versions" funktioniert bei einer Revision-Pinnung nicht; stattdessen die
+  Abhängigkeit entfernen und mit einem neueren Commit-Hash oder, falls
+  inzwischen verfügbar, einem echten Versions-Tag neu hinzufügen), ob
+  zwischenzeitlich ein stabiler Tag verfügbar ist.
 - **Premium-Funktionen**: Manche Wiedergabefunktionen (z. B. On-Demand-
   Wiedergabe bestimmter Inhalte) setzen laut Spotify ein Premium-Konto
   voraus. Die App zeigt in diesem Fall die Fehlermeldung "Dein

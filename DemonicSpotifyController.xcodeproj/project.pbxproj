@@ -608,8 +608,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/spotify/ios-sdk";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = revision;
+				revision = 8d3a71dc25282072f8aa8bb0611cea2324e18f28;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
