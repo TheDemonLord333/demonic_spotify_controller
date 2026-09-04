@@ -188,7 +188,7 @@ final class SpotifyAppRemoteService: NSObject, SpotifyAppRemoteServicing {
 
     func skipToNext() async throws {
         #if canImport(SpotifyiOS)
-        try await runPlayerCall { api, callback in api.skipToNext(callback) }
+        try await runPlayerCall { api, callback in api.skip(toNext: callback) }
         #else
         throw DemonicError.appRemoteNotConnected
         #endif
@@ -196,7 +196,7 @@ final class SpotifyAppRemoteService: NSObject, SpotifyAppRemoteServicing {
 
     func skipToPrevious() async throws {
         #if canImport(SpotifyiOS)
-        try await runPlayerCall { api, callback in api.skipToPrevious(callback) }
+        try await runPlayerCall { api, callback in api.skip(toPrevious: callback) }
         #else
         throw DemonicError.appRemoteNotConnected
         #endif
@@ -244,12 +244,12 @@ extension SpotifyAppRemoteService: SPTAppRemoteDelegate {
     func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
         connectionStatus = .connected
         appRemote.playerAPI?.delegate = self
-        appRemote.playerAPI?.subscribeToPlayerState { [weak self] _, error in
+        appRemote.playerAPI?.subscribe(toPlayerState: { [weak self] _, error in
             if let error {
                 AppLog.debugOnly(AppLog.appRemote, "Player-State-Abonnement fehlgeschlagen: \(error)")
                 self?.connectionStatus = .failed(.appRemoteNotConnected)
             }
-        }
+        })
     }
 
     func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
